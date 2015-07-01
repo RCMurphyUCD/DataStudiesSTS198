@@ -1,0 +1,125 @@
+library(lattice)
+library(ggmap)
+library(rworldmap)
+#1
+length(hf[,1])
+#2
+unique(hf$dateSold)
+#3
+table(hf$county)
+#4
+table(hf$sold.year)
+#5
+summary(hf$price)
+hist(hf$price, breaks = 100)
+# data isn't normal median is a better estimate
+#6
+#see 5
+
+#7
+# see 5, looks like several outliers in the high range skews mean
+# to be higher than expected
+#8
+index = which(hf$yearBuilt > 2015)
+problem = hf[index,]
+#they should be 19xx instead of 38xx
+#9
+hf$yearBuilt[29934] = 1984
+hf$yearBuilt[30057] = 1991
+hf$yearBuilt[30060] = 1985
+hf$yearBuilt[72313] = 1980
+hf$yearBuilt[176861] = 1980
+boxxy = boxplot(hf$price)
+boxxy$stats
+a2 = which(hf$price >= boxxy$stats[5])
+b2 = which(hf$price <= boxxy$stats[1])
+c2 = c(a2,b2)
+hfO = hf[-c2,]
+hist(hfO$price, 100, main = "Corrected Price")
+boxxy2 = boxplot(hfO$bsqft)
+boxxy2$stats
+a = which(hfO$bsqft >= boxxy2$stats[5])
+b = which(hfO$bsqft <= boxxy2$stats[1])
+c = c(a,b)
+hf1 = hfO[-c,]
+hist(hf$bsqft, breaks = 50, main = "Not corrected Hist for BSQFT")
+hist(hf1$bsqft, breaks = 50, main = "Corrected Hist for BSQFT")
+#not feasible to correct individual data when the total is close to 300000,
+#removed several outliers using botplots
+
+#10
+#yes there are new graphs, the extreme outliers have been corrected
+# so, the data can be shown in a more narrow region which allows
+# one to see what the distribution should have looked like
+# might even justify using the mean over the median
+
+#11
+index = which(hf1$city == "Berkeley" & hf1$br == 3 & hf1$price < 800000)
+length(index)
+summary(hf1$price[index])
+sd(hf1$price[index])
+#12
+smoothScatter(hf1$bsqft,hf1$price, main = "Price vs Bsqft")
+fit = lm(price~bsqft, data = hf1)
+abline(fit, col = "red")
+#positive correlation between bsqft and price
+#13
+which(hf1$yearBuilt > 2015)
+hf1$yearBuilt[67437] = 1980
+fit = lm(price~yearBuilt, data = hf1)
+smoothScatter(hf1$yearBuilt, hf1$price, main = "Price vs yearBuilt")
+abline(fit, col = "red")
+#there doesn't seem like there is any correlation between year built and price
+#14
+
+counts = table(cut(hf$dateSold, "month"))
+
+plot(as.Date(names(counts)), counts, type = "l",
+xlab = "month/year", ylab="Number of houses",
+main = "Number of houses sold in each month")
+
+#15
+tapply(hf1$price, hf1$sold.month , median)
+
+#16
+tapply(hf1$price, list(hf1$sold.month, hf1$county) , median)
+
+#17
+boxtest = split(hf1$price, hf1$sold.year, hf1$county)
+boxplot(hf1$price~hf1$sold.year+hf1$county)
+#18
+
+
+xyplot(price~bsqft|county, hf1,subset = bsqft,
+       panel = function(x, y) {
+         panel.xyplot(x, y)
+         panel.abline(lm(y ~ x), col = "red")}, main = "Price vs Bsqft by county")
+
+#from the looks of the graphs, there seems to be a positive corelation
+#between an increase in bsqft and price, although some have higher rates than
+#others
+
+#19
+newmap = getMap(resolution = "low")
+plot(newmap, xlim = c(-123.6, -121.5), ylim = c(36.98,38.85), asp = 1)
+plot(newmap, xlim = c(-123.6, -121.5), ylim = c(36.98,38.85), asp = 1, main = "Blood on a Bay Area Map... I mean Sold Houses")
+points(hf$long, hf$lat, col = "red", cex = .05)
+library(ggmap)
+myLocation = c(-123.6, 36.98, -121.5, 38.85)
+myMap = get_map(location = myLocation)
+ggmap(myMap)+geom_point(aes(x=long,y=lat), data = hf, alpha = .3, color="darkred", size=1)
+#20
+#plot the distribution of lsqft and county
+boxxy = boxplot(hf1$lsqft)
+boxxy$stats
+a2 = which(hf1$lsqft >= boxxy$stats[5])
+b2 = which(hf1$lsqft <= boxxy$stats[1])
+c2 = c(a2,b2)
+hf2 = hf1[-c2,]
+#correcting for outliers
+xyplot(bsqft~lsqft|county, hf2, subset = lsqft,
+       panel = function(x, y) {
+         panel.xyplot(x, y)
+         panel.abline(lm(y ~ x), col = "red")}, main = "LSQFT vs BSQFT by county")
+
+#overall it looks like there is a positive correlation between lsqft and bsqft
