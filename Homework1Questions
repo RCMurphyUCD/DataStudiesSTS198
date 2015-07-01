@@ -1,0 +1,34 @@
+The Data
+
+To load the data
+load(url('http://eeyore.ucdavis.edu/sts198/Data/SFHousing.rda'))
+
+Questions
+
+How many houses were sold over this period.
+What dates (when these houses were sold, i.e., dateSold) does this data set cover?
+How many houses were sold in each county? Does this seem reasonable given the populations of these counties?
+How many houses were sold in each year?
+How can we account for the differences?
+What is the average sales price (the price variable)? What is the median sales price? Which is a better measure of the typical price?
+What are the minimum and maximum sales prices?
+Plot the distribution of sales price. Summarize qualitatively what you see.
+The variable yearBuilt gives the year in which the house was built. It contains 5 values over 3000. Explore these. What is similar about these? Use Google and the house adress to find out the pattern of the mistake. Then correct the values in the data frame.
+What variables appear to have outliers and/or incorrect values. Explain how you identified these observations. Then use Google and the street address and county to correct some of the most extreme outliers. Explain what you did and make certain to include the code so that I can apply the same changes to my version of the data set.
+Having corrected the "outliers", look at the distributions of the variables and the scatterplots from above and see if you find new ones. Explain your reasoning.
+How many houses are there in Berkeley with 3 or more bedrooms that sold for less than $800,000? What was the average price and the standard deviation of the price for these houses?
+Look at the relationship between price and building square feet (bsqft). Explain and interpret.
+Is there evidence that older houses (yearBuilt) generally more or less expensive? Plot the year built versus price and interpret.
+Show, using a plot, how many houses were sold in each month county of the entire period. By this I don't mean group all the Januarys together and get the count, but treat January 2005 and January 2006 as different months. So you will have a time time series showing the number of houses sold. Are there times of the year when more houses are sold? and other times when fewer houses are sold? Offer possible explanations if you find there are such periods.
+Think table and then plot those against the date. To group by month you can use cut(hf$dateSold, "month") to create a categorical variable (factor) representing each month.
+Calculate the median price for each month and display them in a plot. Interpret the plot.
+Think tapply().
+Calculate the median price for each month for each county and display them.
+Think tapply() again but recognize that we can group by more than one variable, e.g., tapply(var1, list(var2, var3), command)
+Use a boxplot to show the distribution of prices for each year for each county. Interpret the plot.
+Use split().
+For each county, look at the relationship between price and building square feet (bsqft). Are the relationships similar? or are some counties quite different from others?
+Think of the plot(s)/numerical summaries you want to create to display this before you make it. Think of a separate panel for the different counties or a single plot with the county of each observation indicated by color.
+Display the locations of the houses.
+For bonus points, put them on a map.
+Identify one other potentially interesting question we can ask of this data, and then answer it.
