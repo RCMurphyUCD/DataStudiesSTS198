@@ -1,3 +1,4 @@
-# DataStudiesSTS198
+DataStudiesSTS198
+
 Data studies class
-has the first homework R code and questions
+has the first homework R code and questions (basic R)
